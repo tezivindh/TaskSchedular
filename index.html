@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Scheduler</title>
+  <link rel="stylesheet" crossorigin href="/assets/index-VeSR-_Nq.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Task Scheduler</h1>
+        
+        <div class="add-task">
+            <h2>Add New Task</h2>
+            <form id="task-form">
+                <input type="text" id="task-title" placeholder="Task Title" required>
+                <textarea id="task-description" placeholder="Description"></textarea>
+                <input type="datetime-local" id="task-deadline" required>
+                <select id="task-priority">
+                    <option value="low">Low Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="high">High Priority</option>
+                </select>
+                <select id="task-category">
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="other">Other</option>
+                </select>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+
+        <div class="task-filters">
+            <select id="filter-category">
+                <option value="all">All Categories</option>
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="shopping">Shopping</option>
+                <option value="other">Other</option>
+            </select>
+            <select id="filter-status">
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="overdue">Overdue</option>
+            </select>
+        </div>
+
+        <div class="tasks-container">
+            <h2>Tasks</h2>
+            <div id="tasks-list"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
