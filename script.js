@@ -23,11 +23,6 @@ class TaskScheduler {
   addTask() {
     const title = document.getElementById('task-title').value.trim();
 
-    if (!title) {
-        this.showNotification('Task title is required!');
-        return;
-    }
-
     const task = {
         id: Date.now(),
         title,
