@@ -47,6 +47,7 @@ class TaskScheduler {
 }
 
 
+
   deleteTask(id) {
     this.tasks = this.tasks.filter((task) => task.id !== id);
     this.saveTasks();
