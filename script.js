@@ -17,21 +17,28 @@ class TaskScheduler {
     }
 
     addTask() {
-        const task = {
-            id: Date.now(),
-            title: document.getElementById('task-title').value.trim(),
-            description: document.getElementById('task-description').value.trim(),
-            deadline: document.getElementById('task-deadline').value.trim(),
-            priority: document.getElementById('task-priority').value,
-            category: document.getElementById('task-category').value,
-            status: 'pending',
-            createdAt: new Date().toISOString()
-        };
+        const title = document.getElementById('task-title').value.trim();
+        const description = document.getElementById('task-description').value.trim();
+        const deadline = document.getElementById('task-deadline').value.trim();
+        const priority = document.getElementById('task-priority').value;
+        const category = document.getElementById('task-category').value;
 
-        if (!task.title || !task.deadline) {
+        if (!title || !deadline) {
             this.showNotification('Task title and deadline are required!');
             return;
         }
+
+        const task = {
+            id: Date.now(),
+            title,
+            description,
+            deadline,
+            priority,
+            category,
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            notified: false
+        };
 
         this.tasks.push(task);
         this.saveTasks();
@@ -53,7 +60,7 @@ class TaskScheduler {
             task.status = task.status === 'completed' ? 'pending' : 'completed';
             this.saveTasks();
             this.renderTasks();
-            this.showNotification(Task marked as ${task.status}!);
+            this.showNotification(`Task marked as ${task.status}!`);
         }
     }
 
@@ -76,7 +83,7 @@ class TaskScheduler {
             filteredTasks = filteredTasks.filter(task => task.status === statusFilter);
         }
 
-        tasksList.innerHTML = ''; // Clear the task list before rendering
+        tasksList.innerHTML = ''; 
 
         filteredTasks
             .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
@@ -116,9 +123,8 @@ class TaskScheduler {
                     const deadline = new Date(task.deadline);
                     const timeDiff = deadline - now;
 
-                    // Notify 1 hour before deadline
                     if (timeDiff > 0 && timeDiff <= 3600000 && !task.notified) {
-                        this.showNotification(Task "${task.title}" is due in less than an hour!);
+                        this.showNotification(`Task "${task.title}" is due in less than an hour!`);
                         task.notified = true;
                         this.saveTasks();
                     }
@@ -137,10 +143,9 @@ class TaskScheduler {
                     new Notification(message);
                 }
             });
+        } else {
+            alert(message);
         }
-
-        // Fallback alert
-        alert(message);
     }
 }
 
