@@ -20,28 +20,45 @@ class TaskScheduler {
       .addEventListener("change", () => this.renderTasks());
   }
 
+  validateInputs(title, deadline) {
+    if (!title) {
+      this.showNotification("Task title cannot be empty!");
+      return false;
+    }
+
+    if (new Date(deadline) < new Date()) {
+      this.showNotification("Deadline cannot be in the past!");
+      return false;
+    }
+
+    return true;
+  }
+
   addTask() {
     const title = document.getElementById('task-title').value.trim();
+    const deadline = document.getElementById('task-deadline').value.trim();
+
+    if (!this.validateInputs(title, deadline)) {
+      return;
+    }
 
     const task = {
-        id: Date.now(),
-        title,
-        description: document.getElementById('task-description').value.trim(),
-        deadline: document.getElementById('task-deadline').value.trim(),
-        priority: document.getElementById('task-priority').value,
-        category: document.getElementById('task-category').value,
-        status: 'pending',
-        createdAt: new Date().toISOString(),
+      id: Date.now(),
+      title,
+      description: document.getElementById('task-description').value.trim(),
+      deadline,
+      priority: document.getElementById('task-priority').value,
+      category: document.getElementById('task-category').value,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
     };
 
     this.tasks.push(task);
     this.saveTasks();
-    this.renderTasks(); // Ensure this is called after adding the task
+    this.renderTasks();
     document.getElementById('task-form').reset();
     this.showNotification('Task added successfully!');
-}
-
-
+  }
 
   deleteTask(id) {
     this.tasks = this.tasks.filter((task) => task.id !== id);
@@ -56,7 +73,7 @@ class TaskScheduler {
       task.status = task.status === "completed" ? "pending" : "completed";
       this.saveTasks();
       this.renderTasks();
-      this.showNotification(`Task marked as ${task.status}!`);
+      this.showNotification(Task marked as ${task.status}!);
     }
   }
 
@@ -109,18 +126,14 @@ class TaskScheduler {
                 ).toLocaleString()}</div>
                 <div class="task-description">${task.description}</div>
                 <div class="task-actions">
-                    <button onclick="taskScheduler.toggleTaskStatus(${
-                      task.id
-                    })">
+                    <button onclick="taskScheduler.toggleTaskStatus(${task.id})">
                         ${
                           task.status === "completed"
                             ? "Mark Pending"
                             : "Mark Complete"
                         }
                     </button>
-                    <button onclick="taskScheduler.deleteTask(${
-                      task.id
-                    })">Delete</button>
+                    <button onclick="taskScheduler.deleteTask(${task.id})">Delete</button>
                 </div>
             </div>
         `;
@@ -129,26 +142,42 @@ class TaskScheduler {
   startTaskChecker() {
     setInterval(() => {
       const now = new Date();
+      let tasksUpdated = false;
+
       this.tasks.forEach((task) => {
         if (task.status !== "completed") {
           const deadline = new Date(task.deadline);
           const timeDiff = deadline - now;
 
-          // Notify 1 hour before deadline
           if (timeDiff > 0 && timeDiff <= 3600000 && !task.notified) {
             this.showNotification(
-              `Task "${task.title}" is due in less than an hour!`
+              Task "${task.title}" is due in less than an hour!
             );
             task.notified = true;
-            this.saveTasks();
+            tasksUpdated = true;
           }
         }
       });
+
+      if (tasksUpdated) {
+        this.saveTasks();
+      }
       this.renderTasks();
-    }, 60000); // Check every minute
+    }, 60000);
   }
 
   showNotification(message) {
+    const notificationContainer = document.getElementById("notification-container");
+
+    if (notificationContainer) {
+      const notification = document.createElement("div");
+      notification.className = "notification";
+      notification.textContent = message;
+
+      notificationContainer.appendChild(notification);
+      setTimeout(() => notification.remove(), 3000);
+    }
+
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification(message);
     } else if (
@@ -162,8 +191,7 @@ class TaskScheduler {
       });
     }
 
-    // Fallback alert
-    alert(message);
+    alert(message); // Fallback for browsers without notifications
   }
 }
 
